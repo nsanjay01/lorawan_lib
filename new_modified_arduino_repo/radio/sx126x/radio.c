@@ -27,6 +27,7 @@
 #include "sx126x.h"
 // #include "boards/sx126x/sx126x-board.h"
 // #include "boards/mcu/timer.h"
+#include "sx126x-debug.h"
 #include "timer.h"
 #include "stm32f4xx_hal.h"
 
