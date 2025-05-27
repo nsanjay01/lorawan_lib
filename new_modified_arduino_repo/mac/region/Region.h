@@ -52,7 +52,7 @@
 #ifndef __REGION_H__
 #define __REGION_H__
 
-#include "mac/Commissioning.h"
+#include "Commissioning.h"
 
 #define channel_mask_size 12
 

@@ -32,6 +32,19 @@
 
 
 #include "stm32f4xx_hal.h"
+#include "sx126x.h"
+
+
+#ifndef RXTIMEOUT_LORA_MAX
+#define RXTIMEOUT_LORA_MAX 0x380
+#endif
+
+#define RADIO_TCXO_SETUP_TIME 50 // [ms]
+
+/*!
+ * Radio complete Wake-up Time with margin for temperature compensation
+ */
+#define RADIO_WAKEUP_TIME 3 // [ms]
 
 
 
@@ -90,8 +103,8 @@ typedef struct radio_context_s
     Gpio_t dbg_tx;
     Gpio_t dbg_rx;
 #endif
-    radio_board_operating_mode_t op_mode;
-    radio_params_t               radio_params;
+//     radio_board_operating_mode_t op_mode;
+//     radio_params_t               radio_params;
 } radio_context_t;
 
 
@@ -473,4 +486,6 @@ extern const struct Radio_s Radio;
 // defined sx126x_pkt_params_lora_t here
 extern sx126x_pkt_params_lora_t lora_pkt_params;
 
+// defined sx126x_mod_params_lora_t here
+extern sx126x_mod_params_lora_t lora_mod_params;
 #endif // __RADIO_H__
