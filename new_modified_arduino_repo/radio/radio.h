@@ -54,7 +54,7 @@
 typedef enum
 {
 	MODEM_FSK = 0,
-	MODEM_LORA,
+	MODEM_LORA 
 } RadioModems_t;
 
 /*!
@@ -76,7 +76,7 @@ typedef struct radio_context_s
 {
     SPI_HandleTypeDef  spi;
     // GPIO_TypeDef reset;
-#if defined( SX126X ) || defined( LR11XX )
+
     struct
     {
     GPIO_TypeDef *GPIO_PORT;
@@ -94,17 +94,7 @@ typedef struct radio_context_s
     GPIO_TypeDef *GPIO_PORT;
     uint16_t pin;
     }reset;
-#elif defined( SX127X )
-    Gpio_t dio_0;
-    Gpio_t dio_1;
-    Gpio_t dio_2;
-#endif
-#if defined( USE_RADIO_DEBUG )
-    Gpio_t dbg_tx;
-    Gpio_t dbg_rx;
-#endif
-//     radio_board_operating_mode_t op_mode;
-//     radio_params_t               radio_params;
+
 } radio_context_t;
 
 
@@ -334,7 +324,8 @@ struct Radio_s
 	/*!
      * \brief Sets the radio in sleep mode
      */
-	void (*Sleep)(const void* context, const sx126x_sleep_cfgs_t cfg);
+	// void (*Sleep)(const void* context, const sx126x_sleep_cfgs_t cfg);
+     void (*Sleep)(void);
 	/*!
      * \brief Sets the radio in standby mode
      */

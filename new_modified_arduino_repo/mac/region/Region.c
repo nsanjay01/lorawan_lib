@@ -23,7 +23,7 @@ Maintainer: Miguel Luis ( Semtech ), Gregory Cristian ( Semtech ) and Daniel Jae
 
 // #include "boards/mcu/timer.h"
 #include "timer.h"
-#include "mac/LoRaMac.h"
+#include "LoRaMac.h"
 
 // Regional includes
 #include "Region.h"

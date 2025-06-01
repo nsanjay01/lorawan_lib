@@ -23,10 +23,11 @@ Maintainer: Miguel Luis ( Semtech ), Gregory Cristian ( Semtech ) and Daniel Jae
 #include <stdint.h>
 #include <math.h>
 
-#include "boards/mcu/timer.h"
-#include "system/utilities.h"
-#include "mac/LoRaMac.h"
+#include "timer.h"
+#include "utilities.h"
+#include "LoRaMac.h"
 #include "RegionCommon.h"
+#include "radio.h"
 
 #define BACKOFF_DC_1_HOUR 100
 #define BACKOFF_DC_10_HOURS 1000

@@ -17,7 +17,7 @@ License: Revised BSD License, see LICENSE.TXT file include in the project
 
 Maintainer: Miguel Luis ( Semtech ), Gregory Cristian ( Semtech ) and Daniel Jaeckle ( STACKFORCE )
 */
-#include "mac/Commissioning.h"
+#include "Commissioning.h"
 
 #ifdef REGION_RU864
 #include <stdbool.h>
@@ -25,15 +25,15 @@ Maintainer: Miguel Luis ( Semtech ), Gregory Cristian ( Semtech ) and Daniel Jae
 #include <stdint.h>
 #include <math.h>
 
-#include "boards/mcu/board.h"
-#include "mac/LoRaMac.h"
+// #include "boards/mcu/board.h"
+#include "LoRaMac.h"
 
-#include "system/utilities.h"
+#include "utilities.h"
 
 #include "Region.h"
 #include "RegionCommon.h"
 #include "RegionRU864.h"
-
+#include "radio.h"
 // Definitions
 #define CHANNELS_MASK_SIZE 1
 
@@ -962,7 +962,8 @@ bool RegionRU864NextChannel(NextChanParams_t *nextChanParams, uint8_t *channel, 
 			return true;
 		}
 		LOG_LIB("RU864", "RegionRU864NextChannel Datarate not supported by any channel");
-		delay(100);
+		// delay(100);
+		HAL_Delay(100);
 		// Datarate not supported by any channel, restore defaults
 		ChannelsMask[0] |= LC(1) + LC(2);
 		*time = 0;

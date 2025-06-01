@@ -1,8 +1,12 @@
+
+
+
 #include "sx126x_hal.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include "main.h"
-#include "radio_board.h"
+// #include "radio_board.h"
+
 
 
 
@@ -72,9 +76,9 @@ sx126x_hal_status_t sx126x_hal_wakeup( const void* context )
 {
     radio_context_t* sx126x_context = ( radio_context_t* ) context;
 
-    if( ( radio_board_get_operating_mode( ) == RADIO_BOARD_OP_MODE_SLEEP ) ||
-        ( radio_board_get_operating_mode( ) == RADIO_BOARD_OP_MODE_RX_DC ) )
-    {
+    // if( ( radio_board_get_operating_mode( ) == RADIO_BOARD_OP_MODE_SLEEP ) ||
+    //     ( radio_board_get_operating_mode( ) == RADIO_BOARD_OP_MODE_RX_DC ) )
+    // {
         // Wakeup radio
         HAL_GPIO_WritePin(sx126x_context->nss.GPIO_PORT, sx126x_context->nss.pin, GPIO_PIN_RESET);
 
@@ -83,7 +87,7 @@ sx126x_hal_status_t sx126x_hal_wakeup( const void* context )
         // Radio is awake in STDBY_RC mode
         HAL_GPIO_WritePin(sx126x_context->nss.GPIO_PORT, sx126x_context->nss.pin, GPIO_PIN_SET);
 
-    }
+    // }
 
     // Wait on busy pin for 100 ms
     HAL_Delay(100);

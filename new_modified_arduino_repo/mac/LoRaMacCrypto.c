@@ -19,10 +19,10 @@ Maintainer: Miguel Luis ( Semtech ), Gregory Cristian ( Semtech ) and Daniel Jae
 */
 #include <stdlib.h>
 #include <stdint.h>
-#include "system/utilities.h"
+#include "utilities.h"
 
-#include "system/crypto/aes.h"
-#include "system/crypto/cmac.h"
+#include "aes.h"
+#include "cmac.h"
 
 #include "LoRaMacCrypto.h"
 

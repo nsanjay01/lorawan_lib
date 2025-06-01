@@ -18,11 +18,15 @@ License: Revised BSD License, see LICENSE.TXT file include in the project
 Maintainer: Miguel Luis ( Semtech ), Gregory Cristian ( Semtech ) and Daniel Jaeckle ( STACKFORCE )
 */
 // #include "boards/mcu/board.h"
-#include "system/utilities.h"
+#include "utilities.h"
 #include "LoRaMac.h"
 #include "region/Region.h"
 #include "LoRaMacCrypto.h"
 #include "LoRaMacTest.h"
+#include "timer.h"
+#include "radio.h"
+#include "sx126x-debug.h"
+
 
 extern bool lmh_mac_is_busy;
 
@@ -1854,10 +1858,10 @@ static void ProcessMacCommands(uint8_t *payload, uint8_t macIndex, uint8_t comma
 		case SRV_MAC_DEV_STATUS_REQ:
 		{
 			uint8_t batteryLevel = BAT_LEVEL_NO_MEASURE;
-			if ((LoRaMacCallbacks != NULL) && (LoRaMacCallbacks->GetBatteryLevel != NULL))
-			{
-				batteryLevel = LoRaMacCallbacks->GetBatteryLevel();
-			}
+			// if ((LoRaMacCallbacks != NULL) && (LoRaMacCallbacks->GetBatteryLevel != NULL))
+			// {
+			// 	batteryLevel = LoRaMacCallbacks->GetBatteryLevel();
+			// }
 			AddMacCommand(MOTE_MAC_DEV_STATUS_ANS, batteryLevel, snr);
 			break;
 		}
@@ -2448,35 +2452,36 @@ LoRaMacStatus_t SetTxContinuousWave1(uint16_t timeout, uint32_t frequency, uint8
 	return LORAMAC_STATUS_OK;
 }
 
-LoRaMacStatus_t LoRaMacInitialization(LoRaMacPrimitives_t *primitives, LoRaMacCallback_t *callbacks, LoRaMacRegion_t region, eDeviceClass nodeClass, bool region_change)
+// LoRaMacStatus_t LoRaMacInitialization(LoRaMacPrimitives_t *primitives, LoRaMacCallback_t *callbacks, LoRaMacRegion_t region, eDeviceClass nodeClass, bool region_change)
+LoRaMacStatus_t LoRaMacInitialization(const LoRaMacInitParams_t *params)
 {
 	GetPhyParams_t getPhy;
 	PhyParam_t phyParam;
 
-	if (primitives == NULL)
+	if (params->primitives == NULL)
 	{
 		return LORAMAC_STATUS_PARAMETER_INVALID;
 	}
 
-	if ((primitives->MacMcpsConfirm == NULL) ||
-		(primitives->MacMcpsIndication == NULL) ||
-		(primitives->MacMlmeConfirm == NULL))
+	if ((params->primitives->MacMcpsConfirm == NULL) ||
+		(params->primitives->MacMcpsIndication == NULL) ||
+		(params->primitives->MacMlmeConfirm == NULL))
 	{
 		return LORAMAC_STATUS_PARAMETER_INVALID;
 	}
 	// Verify if the region is supported
-	if (RegionIsActive(region) == false)
+	if (RegionIsActive(params->Region) == false)
 	{
 		return LORAMAC_STATUS_REGION_NOT_SUPPORTED;
 	}
 
-	LoRaMacPrimitives = primitives;
-	LoRaMacCallbacks = callbacks;
-	LoRaMacRegion = region;
+	LoRaMacPrimitives = params->primitives;
+	LoRaMacCallbacks = params->callbacks;
+	LoRaMacRegion = params->Region;
 
 	LoRaMacFlags.Value = 0;
 
-	LoRaMacDeviceClass = nodeClass;
+	LoRaMacDeviceClass = params->nodeClass;
 	LoRaMacState = LORAMAC_IDLE;
 
 	JoinRequestTrials = 0;
@@ -2566,7 +2571,7 @@ LoRaMacStatus_t LoRaMacInitialization(LoRaMacPrimitives_t *primitives, LoRaMacCa
 
 	ResetMacParameters();
 
-	if (!region_change)
+	if (!params->region_change)
 	{
 		// Initialize timers
 		TimerInit(&MacStateCheckTimer, OnMacStateCheckTimerEvent);

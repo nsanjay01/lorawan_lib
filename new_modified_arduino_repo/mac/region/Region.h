@@ -53,6 +53,8 @@
 #define __REGION_H__
 
 #include "Commissioning.h"
+#include "timer.h"
+#include "LoRaMac.h"
 
 #define channel_mask_size 12
 

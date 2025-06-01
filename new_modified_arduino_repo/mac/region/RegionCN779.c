@@ -17,7 +17,7 @@ License: Revised BSD License, see LICENSE.TXT file include in the project
 
 Maintainer: Miguel Luis ( Semtech ), Gregory Cristian ( Semtech ) and Daniel Jaeckle ( STACKFORCE )
 */
-#include "mac/Commissioning.h"
+#include "Commissioning.h"
 
 #ifdef REGION_CN779
 
@@ -26,14 +26,15 @@ Maintainer: Miguel Luis ( Semtech ), Gregory Cristian ( Semtech ) and Daniel Jae
 #include <stdint.h>
 #include <math.h>
 
-#include "boards/mcu/board.h"
-#include "mac/LoRaMac.h"
+// #include "boards/mcu/board.h"
+#include "LoRaMac.h"
 
-#include "system/utilities.h"
+#include "utilities.h"
 
 #include "Region.h"
 #include "RegionCommon.h"
 #include "RegionCN779.h"
+#include "radio.h"
 
 // Definitions
 #define CHANNELS_MASK_SIZE 1

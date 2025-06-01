@@ -12,10 +12,17 @@
  * 
  */
 
+
+#ifndef __SX126XDEBGUG__
+#define __SX126XDEBGUG__
+
+
+#include <stdio.h>
+
 // If not on PIO or not defined in platformio.ini
 #ifndef LIB_DEBUG
 // Debug output set to 0 to disable app debug output
-#define LIB_DEBUG 0
+#define LIB_DEBUG 1
 #endif
 
 #if LIB_DEBUG > 0
@@ -24,10 +31,12 @@
 	{                                    \
 		if (tag)                         \
 			printf("<%s> ", tag);        \
-			// Serial.printf("<%s> ", tag);
-		Serial.printf(__VA_ARGS__);      \
-		Serial.printf("\n");             \
+		    printf(__VA_ARGS__);         \
+		    printf("\n");                \
 	} while (0)
 #else
 #define LOG_LIB(...)
 #endif
+
+#endif
+

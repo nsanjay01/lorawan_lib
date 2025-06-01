@@ -35,6 +35,9 @@
 #ifndef __REGIONCOMMON_H__
 #define __REGIONCOMMON_H__
 
+#include "timer.h"
+#include "LoRaMac.h"
+
 typedef struct sRegionCommonLinkAdrParams
 {
 	/*!

@@ -1639,6 +1639,12 @@ sx126x_status_t sx126x_get_lora_params_from_header( const void* context, sx126x_
  */
 uint8_t SX126xGetPayload(const void* context, uint8_t *buffer, uint8_t *size, uint8_t maxSize);
 
+static sx126x_status_t sx126x_tx_modulation_workaround( const void* context, sx126x_pkt_type_t pkt_type,
+    sx126x_lora_bw_t bw );
+
+
+
+
 #ifdef __cplusplus
 }
 #endif

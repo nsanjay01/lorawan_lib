@@ -17,6 +17,8 @@ Maintainer: Miguel Luis and Gregory Cristian
 
 // #include <Arduino.h>
 #include <stdint.h>
+#include "sx126x-debug.h"
+#include <stdlib.h>
 
 /*!
  * \brief Returns 2 raised to the power of n

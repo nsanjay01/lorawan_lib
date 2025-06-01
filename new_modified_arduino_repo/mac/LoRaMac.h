@@ -41,6 +41,8 @@
 #ifndef __LORAMAC_H__
 #define __LORAMAC_H__
 
+#include "stdbool.h"
+#include "timer.h"
 /*!
  * Check the Mac layer state every MAC_STATE_CHECK_TIMEOUT in ms
  */
@@ -467,6 +469,8 @@ typedef enum eLoRaMacBatteryLevel
      */
 	BAT_LEVEL_NO_MEASURE = 0xFF,
 } LoRaMacBatteryLevel_t;
+
+
 
 /*!
  * LoRaMAC header field definition (MHDR field)
@@ -1689,8 +1693,10 @@ typedef struct sLoRaMacCallback
      *          power source, 1..254: battery level, where 1 is the minimum
      *          and 254 is the maximum value, 255: the node was not able
      *          to measure the battery level]
+     *  
      */
-	uint8_t (*GetBatteryLevel)(void);
+	// uint8_t (*GetBatteryLevel)(void);
+     char dummy;
 } LoRaMacCallback_t;
 
 /*!
@@ -1698,31 +1704,7 @@ typedef struct sLoRaMacCallback
  */
 static const uint8_t LoRaMacMaxEirpTable[] = {8, 10, 12, 13, 14, 16, 18, 20, 21, 24, 26, 27, 29, 30, 33, 36};
 
-/*!
- * \brief   LoRaMAC layer initialization
- *
- * \details In addition to the initialization of the LoRaMAC layer, this
- *          function initializes the callback primitives of the MCPS and
- *          MLME services. Every data field of \ref LoRaMacPrimitives_t must be
- *          set to a valid callback function.
- *
- * \param    primitives - Pointer to a structure defining the LoRaMAC
- *                            event functions. Refer to \ref LoRaMacPrimitives_t.
- *
- * \param    callbacks - Pointer to a structure defining the LoRaMAC
- *                        callback functions. Refer to \ref LoRaMacCallback_t.
- *
- * \param    region - The region to start.
- * 
- * \param    nodeClass - Choose node class CLASS_A, CLASS_B or CLASS_C, default to CLASS_A
- *
- * \retval  LoRaMacStatus_t Status of the operation. Possible returns are:
- *          returns are:
- *          \ref LORAMAC_STATUS_OK,
- *          \ref LORAMAC_STATUS_PARAMETER_INVALID,
- *          \ref LORAMAC_STATUS_REGION_NOT_SUPPORTED.
- */
-LoRaMacStatus_t LoRaMacInitialization(LoRaMacPrimitives_t *primitives, LoRaMacCallback_t *callbacks, LoRaMacRegion_t region, eDeviceClass nodeClass = CLASS_A, bool region_change = false);
+
 
 /*!
  * \brief   Returns the Device Address set by the LoRaWan server
@@ -1963,5 +1945,47 @@ void ResetMacCounters(void);
 extern uint8_t LoRaMacNwkSKey[];
 extern uint8_t LoRaMacAppSKey[];
 extern uint32_t LoRaMacDevAddr;
+
+/* Loramac Intialization parameters*/
+
+
+typedef struct LoRaMacInitParams_s {
+     LoRaMacPrimitives_t *primitives;
+     LoRaMacCallback_t *callbacks;
+     LoRaMacRegion_t Region;
+
+     DeviceClass_t nodeClass;
+
+     bool region_change;
+
+ } LoRaMacInitParams_t;
+
+
+/*!
+ * \brief   LoRaMAC layer initialization
+ *
+ * \details In addition to the initialization of the LoRaMAC layer, this
+ *          function initializes the callback primitives of the MCPS and
+ *          MLME services. Every data field of \ref LoRaMacPrimitives_t must be
+ *          set to a valid callback function.
+ *
+ * \param    primitives - Pointer to a structure defining the LoRaMAC
+ *                            event functions. Refer to \ref LoRaMacPrimitives_t.
+ *
+ * \param    callbacks - Pointer to a structure defining the LoRaMAC
+ *                        callback functions. Refer to \ref LoRaMacCallback_t.
+ *
+ * \param    region - The region to start.
+ * 
+ * \param    nodeClass - Choose node class CLASS_A, CLASS_B or CLASS_C, default to CLASS_A
+ *
+ * \retval  LoRaMacStatus_t Status of the operation. Possible returns are:
+ *          returns are:
+ *          \ref LORAMAC_STATUS_OK,
+ *          \ref LORAMAC_STATUS_PARAMETER_INVALID,
+ *          \ref LORAMAC_STATUS_REGION_NOT_SUPPORTED.
+ */
+// LoRaMacStatus_t LoRaMacInitialization(LoRaMacPrimitives_t *primitives, LoRaMacCallback_t *callbacks, LoRaMacRegion_t region, DeviceClass_t nodeClass = CLASS_A, bool region_change = false);
+LoRaMacStatus_t LoRaMacInitialization(const LoRaMacInitParams_t *params);
 
 #endif // __LORAMAC_H__

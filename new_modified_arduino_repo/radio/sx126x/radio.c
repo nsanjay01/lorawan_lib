@@ -30,7 +30,7 @@
 #include "sx126x-debug.h"
 #include "timer.h"
 #include "sx126x_regs.h"
-
+#include "sx126x_hal.h"
 #include "stm32f4xx_hal.h"
 
 
@@ -702,15 +702,15 @@ void RadioSetModem(RadioModems_t modem)
 	switch (modem)
 	{
 	default:
-	case MODEM_FSK:
-		// SX126xSetPacketType(PACKET_TYPE_GFSK);
-		sx126x_set_pkt_type( radio_context, SX126X_PKT_TYPE_GFSK);
+	// case MODEM_FSK:
+	// 	// SX126xSetPacketType(PACKET_TYPE_GFSK);
+	// 	sx126x_set_pkt_type( radio_context, SX126X_PKT_TYPE_GFSK);
 		
-		// When switching to GFSK mode the LoRa SyncWord register value is reset
-		// Thus, we also reset the RadioPublicNetwork variable
-		RadioPublicNetwork.Current = false;
-		_modem = modem;
-		break;
+	// 	// When switching to GFSK mode the LoRa SyncWord register value is reset
+	// 	// Thus, we also reset the RadioPublicNetwork variable
+	// 	RadioPublicNetwork.Current = false;
+	// 	_modem = modem;
+	// 	break;
 	case MODEM_LORA:
 		// SX126xSetPacketType(PACKET_TYPE_LORA);
 		sx126x_set_pkt_type( radio_context, SX126X_PKT_TYPE_LORA);
@@ -754,7 +754,7 @@ bool RadioIsChannelFree(RadioModems_t modem, uint32_t freq, int16_t rssiThresh, 
 
 	RadioRx(0);
 
-	delay(1);
+	HAL_Delay(1000);
 
 	carrierSenseTime = TimerGetCurrentTime();
 
@@ -775,7 +775,9 @@ bool RadioIsChannelFree(RadioModems_t modem, uint32_t freq, int16_t rssiThresh, 
 
 uint32_t RadioRandom(void)
 {
+
 	uint32_t rnd = 0;
+	radio_context_t* radio_context = radio_board_get_radio_context_reference( );
 
 	/*
 	 * Radio setup for random number generation
@@ -784,9 +786,11 @@ uint32_t RadioRandom(void)
 	RadioSetModem(MODEM_LORA);
 
 	// Set radio in continuous reception
-	SX126xSetRx(0);
+	// SX126xSetRx(0);
+	sx126x_set_rx(radio_context, 0);
 
-	rnd = SX126xGetRandom();
+	// rnd = SX126xGetRandom();
+	sx126x_get_random_numbers(radio_context, &rnd, 4);
 	RadioSleep();
 
 	return rnd;
@@ -944,7 +948,7 @@ void RadioSetRxConfig(RadioModems_t modem, uint32_t bandwidth,
 			uint8_t read_data;
 			sx126x_read_register(radio_context,SX126X_REG_IQ_POLARITY, &read_data ,1);
 			read_data = read_data & ~(1 << 2);
-			sx126x_write_register(radio_context, SX126X_REG_IQ_POLARITY,read_data , 1);
+			sx126x_write_register(radio_context, SX126X_REG_IQ_POLARITY,&read_data , 1);
 		}
 		else
 		{
@@ -1243,7 +1247,7 @@ void RadioSleep()
 
 	sx126x_set_sleep(radio_context, SX126X_SLEEP_CFG_WARM_START);
 
-	Hal_Delay(2);
+	HAL_Delay(2);
 }
 
 void RadioStandby(void)

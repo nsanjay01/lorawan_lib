@@ -23,11 +23,13 @@
 #define __LORAMACHELPER_H__
 
 #include "stdint.h"
-#include "mac/Commissioning.h"
+#include "Commissioning.h"
 // #include "boards/mcu/board.h"
-#include "mac/LoRaMac.h"
-#include "mac/region/Region.h"
-#include "mac/region/RegionAS923.h"
+#include "LoRaMac.h"
+#include "Region.h"
+#include "RegionUS915.h"
+#include "stdbool.h"
+
 
 extern bool force_low_dr_opt;
 
@@ -87,7 +89,7 @@ typedef struct lmh_callback_s
 	/**@brief Get the current battery level
  * @retval value  	battery level ( 0: very low, 254: fully charged )
  */
-	uint8_t (*BoardGetBatteryLevel)(void);
+	// uint8_t (*BoardGetBatteryLevel)(void);
 
 	/**@brief Gets the board 64 bits unique ID 
  * @param id	Pointer to an array that will contain the Unique ID
@@ -145,6 +147,18 @@ typedef struct LoraMacHelper_ComplianceTest_s
 	uint8_t nb_gateways;
 } lmh_compliance_test_t;
 
+
+/* struct for lmh_init_params*/
+typedef struct lmh_init_params_s
+{
+	lmh_callback_t *callbacks;
+	lmh_param_t lora_param;
+	bool otaa;
+	DeviceClass_t nodeClass;
+	LoRaMacRegion_t user_region;
+	bool region_change;
+} lmh_init_params_t;
+
 /**@brief Lora Initialisation
  *
  * @param callbacks	Pointer to structure containing the callback functions
@@ -155,9 +169,9 @@ typedef struct LoraMacHelper_ComplianceTest_s
  *
  * @retval error status
  */
-lmh_error_status lmh_init(lmh_callback_t *callbacks, lmh_param_t lora_param,
-						  bool otaa, eDeviceClass nodeClass = CLASS_A, LoRaMacRegion_t region = LORAMAC_REGION_EU868, bool region_change = false);
-
+// lmh_error_status lmh_init(lmh_callback_t *callbacks, lmh_param_t lora_param,
+// 						  bool otaa, eDeviceClass nodeClass = CLASS_A, LoRaMacRegion_t region = LORAMAC_REGION_EU868, bool region_change = false);
+ lmh_error_status lmh_init(lmh_init_params_t *params);
 /**@brief Send data
  *
  * @param app_data Pointer to data structure to be sent

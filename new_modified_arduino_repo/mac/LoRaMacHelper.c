@@ -20,11 +20,14 @@
  *****************************************************************************/
 
 #include "LoRaMacHelper.h"
-#include "region/RegionCommon.h"
-#include "system/utilities.h"
+#include "RegionCommon.h"
+#include "utilities.h"
 
-#include "mac/LoRaMacTest.h"
-#include "mac/LoRaMac.h"
+#include "LoRaMacTest.h"
+#include "LoRaMac.h"
+#include "timer.h"
+#include "sx126x-debug.h"
+#include <string.h>
 extern LoRaMacParams_t LoRaMacParams;
 
 uint16_t ChannelsMask[6];
@@ -702,19 +705,20 @@ static void MlmeConfirm(MlmeConfirm_t *mlmeConfirm)
 	}
 }
 
-lmh_error_status lmh_init(lmh_callback_t *callbacks, lmh_param_t lora_param, bool otaa,
-						  eDeviceClass nodeClass, LoRaMacRegion_t user_region, bool region_change)
+// lmh_error_status lmh_init(lmh_callback_t *callbacks, lmh_param_t lora_param, bool otaa,
+// 						  DeviceClass_t nodeClass, LoRaMacRegion_t user_region, bool region_change)
+lmh_error_status lmh_init(lmh_init_params_t *params)
 {
-	region = (LoRaMacRegion_t)user_region;
+	region = (LoRaMacRegion_t)params->user_region;
 	char strlog1[64];
 	char strlog2[64];
 	char strlog3[64];
 
 	LoRaMacStatus_t error_status;
-	m_param = lora_param;
-	m_callbacks = callbacks;
+	m_param =params->lora_param;
+	m_callbacks = params->callbacks;
 
-	_otaa = otaa;
+	_otaa = params->otaa;
 
 	_dutyCycleEnabled = m_param.duty_cycle;
 
@@ -754,36 +758,46 @@ lmh_error_status lmh_init(lmh_callback_t *callbacks, lmh_param_t lora_param, boo
 	LoRaMacPrimitives.MacMcpsConfirm = McpsConfirm;
 	LoRaMacPrimitives.MacMcpsIndication = McpsIndication;
 	LoRaMacPrimitives.MacMlmeConfirm = MlmeConfirm;
-	LoRaMacCallbacks.GetBatteryLevel = m_callbacks->BoardGetBatteryLevel;
+	// LoRaMacCallbacks.GetBatteryLevel = m_callbacks->BoardGetBatteryLevel;
 
-	error_status = LoRaMacInitialization(&LoRaMacPrimitives, &LoRaMacCallbacks, region, nodeClass, region_change);
+
+	LoRaMacInitParams_t initParams = {
+		.primitives = &LoRaMacPrimitives,
+		.callbacks = &LoRaMacCallbacks,
+		.Region = region,
+		.nodeClass = CLASS_A,      // Optional, if CLASS_A is default
+		.region_change = false     // Optional, if false is default
+	};
+
+	// error_status = LoRaMacInitialization(&LoRaMacPrimitives, &LoRaMacCallbacks, region, nodeClass, region_change);
+	error_status = LoRaMacInitialization(&initParams);
 	if (error_status != LORAMAC_STATUS_OK)
 	{
 		return LMH_ERROR;
 	}
 
 	mibReq.Type = MIB_ADR;
-	mibReq.Param.AdrEnable = lora_param.adr_enable;
+	mibReq.Param.AdrEnable = params->lora_param.adr_enable;
 	LoRaMacMibSetRequestConfirm(&mibReq);
 
 	mibReq.Type = MIB_CHANNELS_DEFAULT_DATARATE;
-	mibReq.Param.ChannelsDefaultDatarate = lora_param.tx_data_rate;
+	mibReq.Param.ChannelsDefaultDatarate = params->lora_param.tx_data_rate;
 	LoRaMacMibSetRequestConfirm(&mibReq);
 
 	mibReq.Type = MIB_CHANNELS_DATARATE;
-	mibReq.Param.ChannelsDatarate = lora_param.tx_data_rate;
+	mibReq.Param.ChannelsDatarate = params->lora_param.tx_data_rate;
 	LoRaMacMibSetRequestConfirm(&mibReq);
 
 	mibReq.Type = MIB_CHANNELS_TX_POWER;
-	mibReq.Param.ChannelsTxPower = lora_param.tx_power;
+	mibReq.Param.ChannelsTxPower = params->lora_param.tx_power;
 	LoRaMacMibSetRequestConfirm(&mibReq);
 
 	mibReq.Type = MIB_PUBLIC_NETWORK;
-	mibReq.Param.EnablePublicNetwork = lora_param.enable_public_network;
+	mibReq.Param.EnablePublicNetwork = params->lora_param.enable_public_network;
 	LoRaMacMibSetRequestConfirm(&mibReq);
 
 	mibReq.Type = MIB_DEVICE_CLASS;
-	mibReq.Param.Class = nodeClass;
+	mibReq.Param.Class = params->nodeClass;
 	LoRaMacMibSetRequestConfirm(&mibReq);
 
 	LoRaMacTestSetDutyCycleOn(_dutyCycleEnabled);
@@ -1032,16 +1046,18 @@ lmh_error_status lmh_send_blocking(lmh_app_data_t *app_data, lmh_confirm is_tx_c
 {
 	if (lmh_send(app_data, is_tx_confirmed) == LMH_SUCCESS)
 	{
-		uint32_t time_start = millis();
+		// uint32_t time_start = millis();
+		uint32_t time_start = TimerGetCurrentTime();
 		while (lmh_mac_is_busy)
 		{
-			if ((millis() - time_start) > time_out)
+			if ((TimerGetCurrentTime() - time_start) > time_out)
 			{
-				LOG_LIB("LMH", "timeout at %ld", (millis() - time_start));
+				LOG_LIB("LMH", "timeout at %ld", (TimerGetCurrentTime() - time_start));
 				lmh_mac_is_busy = false;
 				return LMH_ERROR;
 			}
-			delay(250);
+			// delay(250);
+			HAL_Delay(250);
 		}
 		return LMH_SUCCESS;
 	}
